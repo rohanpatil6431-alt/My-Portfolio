@@ -9,7 +9,7 @@ export const profile = {
   ],
   headline:
     "Full-Stack Web Developer (MERN) — React.js • Node.js • MongoDB • Express",
-  location: "Mumbai Metropolitan Region, India",
+  location: "Pune, Maharashtra, India",
   status: "Open to internships & junior developer roles",
   email: "rohanpatil6431@gmail.com",
   linkedin: "https://www.linkedin.com/in/rohan-patil-7b2280256/",
