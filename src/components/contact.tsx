@@ -81,7 +81,7 @@ export function Contact() {
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.07] px-6 py-8 sm:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-xs text-white/35 sm:flex-row">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-xs text-white/50 sm:flex-row">
         <p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
         <p className="font-mono">Built with Next.js, Tailwind CSS & shadcn/ui</p>
       </div>
