@@ -4,36 +4,46 @@ import { profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import type { MouseEvent } from "react";
+import { useState } from "react";
 
 const sectionIds = profile.navItems.map((item) => item.href.slice(1));
+
+/** Section whose start has passed the reading line, or none while at the hero. */
+function activeSectionAt(scroll: number) {
+  if (scroll < 240) return "";
+  const line = scroll + window.innerHeight * 0.35;
+  let current = "";
+  for (const id of sectionIds) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top + scroll <= line) current = id;
+  }
+  return current;
+}
 
 export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<string>("about");
+  const [active, setActive] = useState("");
   const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, "change", (value) => setScrolled(value > 24));
+  useMotionValueEvent(scrollY, "change", (value) => {
+    setScrolled(value > 24);
+    setActive(activeSectionAt(value));
+  });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0.1, 0.5, 1] },
-    );
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  /**
+   * Collapsing the menu resizes the document, which cancels an in-flight smooth
+   * scroll — so scroll only once the collapse animation has settled.
+   */
+  function handleMobileNav(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    event.preventDefault();
+    setOpen(false);
+    window.setTimeout(() => {
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+      window.history.replaceState(null, "", href);
+    }, 340);
+  }
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 flex justify-center px-4 pt-4">
@@ -112,13 +122,13 @@ export function SiteNav() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="overflow-hidden md:hidden"
+              className="-mx-3 -mb-2 mt-2 overflow-hidden rounded-3xl bg-black/95 backdrop-blur-xl md:hidden"
             >
               {profile.navItems.map((item) => (
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(event) => handleMobileNav(event, item.href)}
                     className="block rounded-xl px-4 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white"
                   >
                     {item.label}

@@ -7,7 +7,7 @@ import type { MouseEvent, ReactNode } from "react";
 export function SpotlightCard({
   children,
   className,
-  glow = "rgba(167,139,250,0.16)",
+  glow = "rgba(167,139,250,0.3)",
 }: {
   children: ReactNode;
   className?: string;
